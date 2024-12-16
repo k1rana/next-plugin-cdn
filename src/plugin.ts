@@ -17,6 +17,7 @@ class DummyStorageProvider implements StorageProvider {
 interface Config {
   dev?: boolean;
   storage?: StorageProvider;
+  prefix?: string;
 }
 
 export class NextCDNPlugin {
@@ -26,6 +27,7 @@ export class NextCDNPlugin {
     this.config = {
       dev: false,
       storage: new DummyStorageProvider(), // default provider. should never be used
+      prefix: "",
       ...options,
     };
   }
@@ -43,21 +45,29 @@ export class NextCDNPlugin {
         return new Promise((resolve, reject) => {
           if (/static/g.test(file)) {
             // This is a hack to fix the path of the file.
-            if (/\/static/g.test(file)) {
-              file = file.replace("/static", "static");
+            const regex = /^(?:\.\.\/\.\.\/|\.\.\/\.\.|\/|\.\.\/)/;
+            if (regex.test(file)) {
+              file = file.replace(regex, "");
             }
+            file = `${file}`;
 
-            storage.has(`_next/${file}`).then((exists) => {
+            const prefix = `${
+              this.config.prefix && `${this.config.prefix}/`
+            }_next/`;
+
+            storage.has(`${prefix}${file}`).then((exists) => {
               if (exists) {
                 // file already exits in storage. skip upload
                 // in future, we can check if the file has changed and re-upload
                 // or we can force re-upload by deleting the file first
-                resolve();
-                // console.warn(`\x1b[35mcdn\x1b[0m  - Skipped uploading ${file}`);
-                return;
+                console.log(`\x1b[35mcdn\x1b[0m  - Re-upload ${file}`);
+
+                // resolve();
+                // // console.warn(`\x1b[35mcdn\x1b[0m  - Skipped uploading ${file}`);
+                // return;
               }
 
-              const fileRef = storage.write(`_next/${file}`);
+              const fileRef = storage.write(`${prefix}${file}`);
 
               const passthroughStream = new PassThrough();
               passthroughStream.write(content);
@@ -66,12 +76,14 @@ export class NextCDNPlugin {
               passthroughStream
                 .pipe(fileRef)
                 .on("finish", () => {
-                  console.info(`\x1b[35mcdn\x1b[0m   - Uploaded ${file}`);
+                  console.info(
+                    `\x1b[35mcdn\x1b[0m   - Uploaded ${prefix}${file}`
+                  );
                   resolve();
                 })
                 .on("error", (err) => {
                   console.error(
-                    `\x1b[35mcdn\x1b[0m   - Failed to uploaded ${file}`
+                    `\x1b[35mcdn\x1b[0m   - Failed to uploaded ${prefix}${file}`
                   );
                   reject(err);
                 });

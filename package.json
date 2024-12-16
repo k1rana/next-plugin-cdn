@@ -1,6 +1,6 @@
 {
   "name": "@ahann/next-plugin-cdn",
-  "version": "0.0.1",
+  "version": "0.0.2-canary.10",
   "description": "",
   "types": "lib/esm/index.d.ts",
   "main": "lib/cjs/index.js",

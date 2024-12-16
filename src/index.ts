@@ -13,12 +13,13 @@ export default function withCDN(
 
     // Note assetPrefix is only used in production since it's not needed in development
     // and it's overwriten.
-    assetPrefix: cdnConfig.domain,
+    assetPrefix: `${cdnConfig.domain}/${cdnConfig?.prefix}`,
     webpack: (config, context) => {
       config.plugins.push(
         new NextCDNPlugin({
           dev: context?.dev,
           storage: new GoogleStorageProvider(cdnConfig),
+          prefix: cdnConfig?.prefix,
         })
       );
       return definedConfig?.webpack?.(config, context) ?? config;

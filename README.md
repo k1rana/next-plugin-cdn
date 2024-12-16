@@ -9,22 +9,22 @@ Currently, it supports Google Cloud Storage, but support is planned to other CDN
 Install the package using your favorite package manager:
 
 ```bash
-npm install next-plugin-cdn
+npm install @ahann/next-plugin-cdn
 ```
 
-or 
+or
 
 ```bash
-yarn add next-plugin-cdn
+yarn add @ahann/next-plugin-cdn
 ```
 
 ## 🔧 Usage
+
 Set the appropriate environment variables for your project.
 
 In your next.config.js, import the plugin and use it to configure your application:
 
 ```javascript
-
 // Import the plugin and pass cdn info and credentials
 // for example using env vars:
 const withCDN = require("next-plugin-cdn").default({
@@ -33,7 +33,6 @@ const withCDN = require("next-plugin-cdn").default({
   bucket: process.env.CDN_BUCKET,
   keyFilename: process.env.CDN_KEY_FILENAME,
 });
-
 
 // Then just apply to your nextjs config
 /** @type {import('next').NextConfig} */
@@ -52,6 +51,7 @@ module.exports = nextConfig;
 Now, during the build process, the plugin will upload your static assets to the specified CDN and configure your Next.js application to use the CDN prefix. 🎉
 
 ## ⚙️ Options
+
 The withCDN function accepts an object with the following properties:
 
 - `domain`: The domain of your CDN. This should be set to the value of the CDN_DOMAIN environment variable.
@@ -62,6 +62,7 @@ The withCDN function accepts an object with the following properties:
 These options are passed to the plugin, which then takes care of uploading the assets and configuring the CDN prefix. 🛠️
 
 ## 🛣️ Roadmap
+
 - [ ] Google Cloud Storage support
 - [ ] AWS S3 support
 - [ ] Cloudflare support
