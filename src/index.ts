@@ -7,21 +7,21 @@ import GoogleStorageProvider, {
 
 export default function withCDN(
   cdnConfig: GoogleProviderConfig
-): (config: NextConfig) => NextConfig {
-  return (config) => ({
-    ...config,
+): (definedConfig: NextConfig) => NextConfig {
+  return (definedConfig) => ({
+    ...definedConfig,
 
     // Note assetPrefix is only used in production since it's not needed in development
     // and it's overwriten.
     assetPrefix: cdnConfig.domain,
-    webpack: (config, { dev }) => {
+    webpack: (config, context) => {
       config.plugins.push(
         new NextCDNPlugin({
-          dev,
+          dev: context?.dev,
           storage: new GoogleStorageProvider(cdnConfig),
         })
       );
-      return config;
+      return definedConfig?.webpack?.(config, context) ?? config;
     },
   });
 }
