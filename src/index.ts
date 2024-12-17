@@ -13,7 +13,9 @@ export default function withCDN(
 
     // Note assetPrefix is only used in production since it's not needed in development
     // and it's overwriten.
-    assetPrefix: `${cdnConfig.domain}/${cdnConfig?.prefix}`,
+    assetPrefix: cdnConfig.domain
+      ? `${cdnConfig.domain}/${cdnConfig?.prefix}`
+      : undefined,
     webpack: (config, context) => {
       config.plugins.push(
         new NextCDNPlugin({
